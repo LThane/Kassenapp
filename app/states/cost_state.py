@@ -71,9 +71,9 @@ class CostState(BaseState):
             return
         amount: float
         category_value = self.categories.get(form["category"])
-        if form["category"] == "Custom":
+        if form["category"] == "Anderes":
             if not form["amount"]:
-                yield rx.toast.error("Amount is required for custom category.")
+                yield rx.toast.error("Amount is required for Anderes category.")
                 return
             try:
                 amount = float(form["amount"])
