@@ -4,10 +4,10 @@ from app.states.auth_state import MyAuthState
 
 
 def profile_page() -> rx.Component:
-    """Member profile page."""
+    """Mitgliederprofil-Seite."""
     return main_layout(
         rx.el.div(
-            rx.el.h1("Member Profile", class_name="text-3xl font-bold text-gray-900"),
+            rx.el.h1("Mitgliederprofil", class_name="text-3xl font-bold text-gray-900"),
             rx.cond(
                 MyAuthState.is_authenticated & (MyAuthState.current_user.id != 0),
                 rx.el.div(
@@ -34,7 +34,7 @@ def profile_page() -> rx.Component:
                     ),
                     class_name="mt-8",
                 ),
-                rx.el.div(rx.el.p("Loading profile...", class_name="text-gray-500")),
+                rx.el.div(rx.el.p("Profil wird geladen...", class_name="text-gray-500")),
             ),
             class_name="p-8 bg-white rounded-xl border border-gray-200 shadow-sm",
         )

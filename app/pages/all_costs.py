@@ -13,11 +13,11 @@ def all_costs_page() -> rx.Component:
                 rx.el.div(
                     rx.el.div(
                         rx.el.h1(
-                            "All Association Costs",
+                            "Alle Vereinskosten",
                             class_name="text-3xl font-bold text-gray-900",
                         ),
                         rx.el.p(
-                            "Overview of all expenses from all members.",
+                            "Übersicht über alle Ausgaben aller Mitglieder.",
                             class_name="mt-1 text-gray-600",
                         ),
                         class_name="flex justify-between items-center mb-8",
@@ -28,11 +28,11 @@ def all_costs_page() -> rx.Component:
                 ),
                 rx.el.div(
                     rx.el.h1(
-                        "Please log in to view this page.",
+                        "Bitte melde dich an, um diese Seite zu sehen.",
                         class_name="text-2xl font-bold text-gray-800",
                     ),
                     rx.el.a(
-                        "Go to Login",
+                        "Zum Login",
                         href="/login",
                         class_name="text-violet-600 hover:underline mt-2",
                     ),
@@ -47,17 +47,17 @@ def summary_cards() -> rx.Component:
     return rx.el.div(
         rx.el.div(
             rx.el.h3(
-                "Total Spent (All)", class_name="text-sm font-medium text-gray-500"
+                "Gesamtausgaben (alle)", class_name="text-sm font-medium text-gray-500"
             ),
-            rx.el.p(
-                "$" + AllCostsState.total_spent_all.to_string(),
+                rx.el.p(
+                    "€" + AllCostsState.total_spent_all.to_string(),
                 class_name="mt-1 text-3xl font-semibold text-gray-900",
             ),
             class_name="p-6 bg-white rounded-xl border border-gray-200 shadow-sm",
         ),
         rx.el.div(
             rx.el.h3(
-                "Total Costs (All)", class_name="text-sm font-medium text-gray-500"
+                "Anzahl Kosten (alle)", class_name="text-sm font-medium text-gray-500"
             ),
             rx.el.p(
                 AllCostsState.total_costs_all,
@@ -67,16 +67,16 @@ def summary_cards() -> rx.Component:
         ),
         rx.el.div(
             rx.el.h3(
-                "Average Cost (All)", class_name="text-sm font-medium text-gray-500"
+                "Durchschn. Kosten (alle)", class_name="text-sm font-medium text-gray-500"
             ),
-            rx.el.p(
-                "$" + AllCostsState.average_cost_all.to_string(),
+                rx.el.p(
+                    "€" + AllCostsState.average_cost_all.to_string(),
                 class_name="mt-1 text-3xl font-semibold text-gray-900",
             ),
             class_name="p-6 bg-white rounded-xl border border-gray-200 shadow-sm",
         ),
         rx.el.div(
-            rx.el.h3("Active Members", class_name="text-sm font-medium text-gray-500"),
+            rx.el.h3("Aktive Mitglieder", class_name="text-sm font-medium text-gray-500"),
             rx.el.p(
                 AllCostsState.total_members,
                 class_name="mt-1 text-3xl font-semibold text-gray-900",
@@ -98,10 +98,10 @@ def weekly_cost_section(week_data: list) -> rx.Component:
     return rx.el.div(
         rx.el.div(
             rx.el.h2(
-                f"Week of {week_data[0]}", class_name="text-xl font-bold text-gray-800"
+                f"Woche ab {week_data[0]}", class_name="text-xl font-bold text-gray-800"
             ),
             rx.el.p(
-                f"Total: ${week_data[2]:.2f}",
+                 f"Total: €{week_data[2]:.2f}",
                 class_name="text-lg font-semibold text-violet-600",
             ),
             class_name="flex justify-between items-center p-4 bg-gray-100 rounded-t-lg",
@@ -118,7 +118,7 @@ def member_cost_section(member_data: list) -> rx.Component:
         rx.el.div(
             rx.el.h3(member_data[0], class_name="font-semibold text-gray-700"),
             rx.el.p(
-                f"Subtotal: ${member_data[2]:.2f}",
+                 f"Subtotal: €{member_data[2]:.2f}",
                 class_name="font-semibold text-gray-600",
             ),
             class_name="flex justify-between items-center p-3 bg-gray-50",
@@ -128,19 +128,19 @@ def member_cost_section(member_data: list) -> rx.Component:
                 rx.el.thead(
                     rx.el.tr(
                         rx.el.th(
-                            "Description",
+                                    "Beschreibung",
                             class_name="px-4 py-2 text-left text-sm font-semibold text-gray-600 w-2/5",
                         ),
                         rx.el.th(
-                            "Amount",
+                                    "Betrag",
                             class_name="px-4 py-2 text-left text-sm font-semibold text-gray-600 w-1/5",
                         ),
                         rx.el.th(
-                            "Date",
+                                    "Datum",
                             class_name="px-4 py-2 text-left text-sm font-semibold text-gray-600 w-1/5",
                         ),
                         rx.el.th(
-                            "Category",
+                                    "Kategorie",
                             class_name="px-4 py-2 text-left text-sm font-semibold text-gray-600 w-1/5",
                         ),
                     )
@@ -157,7 +157,7 @@ def all_cost_row(cost: CostWithMember) -> rx.Component:
     return rx.el.tr(
         rx.el.td(cost["description"], class_name="px-4 py-3 text-sm text-gray-800"),
         rx.el.td(
-            "$" + cost["amount"].to_string(),
+              "€" + cost["amount"].to_string(),
             class_name="px-4 py-3 text-sm text-gray-800",
         ),
         rx.el.td(cost["date"], class_name="px-4 py-3 text-sm text-gray-800"),

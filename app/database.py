@@ -4,8 +4,10 @@ from datetime import datetime, timedelta
 import bcrypt
 
 from app.models import Member, Cost
+import os
 
-DATABASE_URL = "sqlite:///association.db"
+# Allow overriding the database via environment variable for deployment.
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///association.db")
 engine = create_engine(DATABASE_URL, echo=False)
 
 
@@ -62,7 +64,7 @@ def seed_test_data():
                 "description": "Club lemonade",
                 "amount": 1.5,
                 "days_ago": 1,
-                "category": "Drink (non-alcoholic) - €1.50",
+                "category": "Getränk (nicht-alkoholisch) - €1.50",
             },
             {
                 "member_email": "alex@example.com",
@@ -76,7 +78,7 @@ def seed_test_data():
                 "description": "Sparkling water",
                 "amount": 2.5,
                 "days_ago": 2,
-                "category": "Drink (non-alcoholic) - €2.50",
+                "category": "Getränk (alkoholisch) - €2.50",
             },
             {
                 "member_email": "taylor@example.com",

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+.venv/
+venv/
+
+# Node/Reflex build artifacts
+node_modules/
+.web/
+.next/
+.dist/
+.cache/
+
+# Git
+.git/
+.gitignore
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# Local data
+association.db
+assets/__pycache__/

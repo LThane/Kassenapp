@@ -22,7 +22,7 @@ def navbar() -> rx.Component:
                     rx.el.div(
                         rx.el.a(
                             rx.el.button(
-                                "Dashboard",
+                                "Erstelle Kosten",
                                 class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
                                 variant="ghost",
                             ),
@@ -30,7 +30,7 @@ def navbar() -> rx.Component:
                         ),
                         rx.el.a(
                             rx.el.button(
-                                "All Costs",
+                                "Alle Kosten",
                                 class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
                                 variant="ghost",
                             ),
@@ -38,14 +38,14 @@ def navbar() -> rx.Component:
                         ),
                         rx.el.a(
                             rx.el.button(
-                                "Profile",
+                                "Profil",
                                 class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
                                 variant="ghost",
                             ),
                             href="/profile",
                         ),
                         rx.el.button(
-                            "Log Out",
+                            "Abmelden",
                             on_click=MyAuthState.on_logout,
                             class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
                             variant="ghost",
@@ -55,7 +55,7 @@ def navbar() -> rx.Component:
                     rx.el.div(
                         rx.el.a(
                             rx.el.button(
-                                "Log In",
+                                "Anmelden",
                                 class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
                                 variant="ghost",
                             ),
@@ -63,7 +63,7 @@ def navbar() -> rx.Component:
                         ),
                         rx.el.a(
                             rx.el.button(
-                                "Sign Up",
+                                "Registrieren",
                                 class_name="bg-violet-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-violet-700 transition-colors shadow-sm",
                             ),
                             href="/register",

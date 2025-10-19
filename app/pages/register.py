@@ -8,10 +8,10 @@ def register_page() -> rx.Component:
     return auth_layout(
         rx.el.div(
             rx.el.h2(
-                "Create an account", class_name="text-2xl font-bold text-gray-900"
+                "Konto erstellen", class_name="text-2xl font-bold text-gray-900"
             ),
             rx.el.p(
-                "Join the association and start tracking costs.",
+                "Tritt der Gemeinschaft bei und beginne, Ausgaben zu erfassen.",
                 class_name="text-gray-600 mt-1",
             ),
             rx.el.form(
@@ -30,7 +30,7 @@ def register_page() -> rx.Component:
                 ),
                 rx.el.div(
                     rx.el.label(
-                        "Email", class_name="block text-sm font-medium text-gray-700"
+                        "E-Mail", class_name="block text-sm font-medium text-gray-700"
                     ),
                     rx.el.input(
                         type="email",
@@ -43,7 +43,7 @@ def register_page() -> rx.Component:
                 ),
                 rx.el.div(
                     rx.el.label(
-                        "Password", class_name="block text-sm font-medium text-gray-700"
+                        "Passwort", class_name="block text-sm font-medium text-gray-700"
                     ),
                     rx.el.input(
                         type="password",
@@ -55,7 +55,7 @@ def register_page() -> rx.Component:
                     class_name="space-y-1",
                 ),
                 rx.el.button(
-                    "Create Account",
+                    "Konto erstellen",
                     type="submit",
                     class_name="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500",
                 ),
@@ -63,9 +63,9 @@ def register_page() -> rx.Component:
                 on_submit=MyAuthState.on_register,
             ),
             rx.el.p(
-                "Already have an account? ",
+                "Du hast bereits ein Konto? ",
                 rx.el.a(
-                    "Sign in",
+                    "Anmelden",
                     href="/login",
                     class_name="font-medium text-violet-600 hover:text-violet-500",
                 ),

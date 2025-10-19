@@ -11,9 +11,9 @@ from datetime import datetime
 class CostState(BaseState):
     costs: list[dict] = []
     categories: dict[str, float | None] = {
-        "Drink (non-alcoholic) - €1.50": 1.5,
-        "Drink (non-alcoholic) - €2.50": 2.5,
-        "Custom": None,
+        "Getränke (nicht-alkoholisch) - €1.50": 1.5,
+        "Getränke (alkoholisch) - €2.50": 2.5,
+        "Anderes": None,
     }
     form_category: str = ""
     form_amount: str = ""
