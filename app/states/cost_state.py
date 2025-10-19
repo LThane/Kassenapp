@@ -38,7 +38,7 @@ class CostState(BaseState):
 
     @rx.var
     def is_custom_category(self) -> bool:
-        return self.form_category == "Custom"
+        return self.form_category == "Anderes"
 
     @rx.event
     async def get_costs(self):
