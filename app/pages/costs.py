@@ -15,10 +15,6 @@ def costs_page() -> rx.Component:
                             "Meine Kostenübersicht",
                             class_name="text-3xl font-bold text-gray-900",
                         ),
-                        rx.el.p(
-                            "Verfolge und verwalte deine Ausgaben.",
-                            class_name="mt-1 text-gray-600",
-                        ),
                         class_name="flex justify-between items-center mb-8",
                     ),
                     summary_cards(),

@@ -16,10 +16,6 @@ def all_costs_page() -> rx.Component:
                             "Alle Vereinskosten",
                             class_name="text-3xl font-bold text-gray-900",
                         ),
-                        rx.el.p(
-                            "Übersicht über alle Ausgaben aller Mitglieder.",
-                            class_name="mt-1 text-gray-600",
-                        ),
                         class_name="flex justify-between items-center mb-8",
                     ),
                     summary_cards(),
