@@ -2,7 +2,7 @@ from sqlmodel import create_engine, SQLModel, Session, select
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 import bcrypt
-from app.models import Member, Cost
+from app.models import Member, Cost, Notification
 import os
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///association.db")

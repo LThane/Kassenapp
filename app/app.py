@@ -7,6 +7,7 @@ from app.pages.costs import costs_page
 from app.pages.all_costs import all_costs_page
 from app.pages.quick_entry import quick_entry_page
 from app.states.auth_state import MyAuthState
+from app.states.notification_state import NotificationState
 from app.database import init_db
 
 init_db()

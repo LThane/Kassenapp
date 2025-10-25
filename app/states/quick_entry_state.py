@@ -1,7 +1,7 @@
 import reflex as rx
 from sqlmodel import select
 from .base_state import BaseState
-from app.models import Member, Cost
+from app.models import Member, Cost, Notification
 from app.database import db_session
 from datetime import datetime
 import logging
@@ -129,10 +129,18 @@ class QuickEntryState(BaseState):
                 member_id=member_id,
             )
             session.add(new_cost)
+            notification_message = (
+                f"Admin hat ein '{description}' für dich hinzugefügt."
+            )
+            new_notification = Notification(
+                member_id=member_id, message=notification_message
+            )
+            session.add(new_notification)
             session.commit()
         member_name = ""
         for m in self.members:
             if m.id == member_id:
                 member_name = m.name.split()[0]
                 break
-        return rx.toast.success(f"Drink added for {member_name}!")
+        yield rx.toast.success(f"Drink added for {member_name}!")
+        yield rx.toast.info(f"Benachrichtigung an {member_name} gesendet.")

@@ -1,6 +1,8 @@
 import reflex as rx
 from app.states.auth_state import MyAuthState
 from app.states.ui_state import UIState
+from app.states.notification_state import NotificationState
+from app.models import Notification
 
 
 def navbar() -> rx.Component:
@@ -59,6 +61,7 @@ def authenticated_nav() -> rx.Component:
             href="/profile",
             class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
         ),
+        notification_bell(),
         rx.el.button(
             "Abmelden",
             on_click=MyAuthState.on_logout,
@@ -119,6 +122,11 @@ def mobile_menu() -> rx.Component:
                     class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
                     on_click=UIState.close_mobile_menu,
                 ),
+                rx.el.a(
+                    "Benachrichtigungen",
+                    on_click=NotificationState.toggle_notifications,
+                    class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
+                ),
                 rx.el.button(
                     "Abmelden",
                     on_click=MyAuthState.on_logout,
@@ -147,6 +155,70 @@ def mobile_menu() -> rx.Component:
     )
 
 
+def notification_bell() -> rx.Component:
+    return rx.el.div(
+        rx.el.button(
+            rx.icon("bell", size=20),
+            rx.cond(
+                NotificationState.unread_count > 0,
+                rx.el.span(
+                    NotificationState.unread_count.to_string(),
+                    class_name="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white",
+                ),
+            ),
+            on_click=[
+                NotificationState.toggle_notifications,
+                NotificationState.load_notifications,
+            ],
+            class_name="relative rounded-full p-2 text-gray-600 hover:text-violet-600 focus:outline-none",
+        ),
+        rx.cond(NotificationState.show_notifications, notification_dropdown()),
+        class_name="relative",
+    )
+
+
+def notification_dropdown() -> rx.Component:
+    return rx.el.div(
+        rx.el.div(
+            rx.el.h3("Benachrichtigungen", class_name="font-semibold"),
+            rx.el.button(
+                "Alle als gelesen markieren",
+                on_click=NotificationState.mark_all_as_read,
+                class_name="text-xs text-violet-600 hover:underline",
+            ),
+            class_name="flex justify-between items-center px-4 py-2 border-b",
+        ),
+        rx.el.div(
+            rx.cond(
+                NotificationState.notifications.length() > 0,
+                rx.foreach(NotificationState.notifications, notification_item),
+                rx.el.p(
+                    "Keine neuen Benachrichtigungen",
+                    class_name="p-4 text-sm text-gray-500",
+                ),
+            ),
+            class_name="max-h-80 overflow-y-auto divide-y",
+        ),
+        class_name="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-50",
+    )
+
+
+def notification_item(notification: Notification) -> rx.Component:
+    return rx.el.div(
+        rx.el.p(notification.message, class_name="text-sm"),
+        rx.el.p(
+            rx.moment(notification.created_at, "fromNow"),
+            class_name="text-xs text-gray-500 mt-1",
+        ),
+        class_name=rx.cond(
+            notification.is_read,
+            "p-4 hover:bg-gray-50",
+            "p-4 bg-violet-50 hover:bg-violet-100",
+        ),
+        on_click=NotificationState.mark_as_read(notification.id),
+    )
+
+
 def main_layout(child: rx.Component) -> rx.Component:
     """The main layout for the app."""
     return rx.el.div(
@@ -156,4 +228,5 @@ def main_layout(child: rx.Component) -> rx.Component:
             class_name="py-8",
         ),
         class_name="min-h-screen bg-gray-50 font-['Poppins']",
+        on_mount=NotificationState.load_notifications,
     )

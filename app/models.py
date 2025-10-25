@@ -1,6 +1,7 @@
 import reflex as rx
 from sqlmodel import Field, SQLModel
 from typing import TypedDict, Optional
+from datetime import datetime
 
 
 class Member(SQLModel, table=True):
@@ -17,6 +18,14 @@ class Cost(SQLModel, table=True):
     date: str
     category: str
     member_id: int = Field(foreign_key="member.id")
+
+
+class Notification(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    member_id: int = Field(foreign_key="member.id")
+    message: str
+    is_read: bool = Field(default=False)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class CostWithMember(TypedDict):
