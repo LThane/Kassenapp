@@ -9,21 +9,40 @@ def costs_page() -> rx.Component:
         rx.el.div(
             rx.cond(
                 MyAuthState.is_authenticated,
-                rx.el.div(
+                rx.cond(
+                    MyAuthState.current_user.email == "acf@admin.com",
                     rx.el.div(
                         rx.el.h1(
-                            "Meine Kostenübersicht",
-                            class_name="text-3xl font-bold text-gray-900",
+                            "Zugriff verweigert",
+                            class_name="text-2xl font-bold text-gray-800",
                         ),
-                        class_name="flex justify-between items-center mb-8",
+                        rx.el.p(
+                            "Als ACF Admin nutze bitte die Quick Entry Seite, um Kosten für Mitglieder zu erfassen.",
+                            class_name="mt-2 text-gray-600",
+                        ),
+                        rx.el.a(
+                            "Zur Quick Entry Seite",
+                            href="/quick-entry",
+                            class_name="text-violet-600 hover:underline mt-4 inline-block",
+                        ),
+                        class_name="text-center p-8 bg-white rounded-xl shadow-sm",
                     ),
-                    summary_cards(),
                     rx.el.div(
-                        add_cost_form(),
-                        costs_table(),
-                        class_name="grid md:grid-cols-3 gap-8 mt-8",
+                        rx.el.div(
+                            rx.el.h1(
+                                "Meine Kostenübersicht",
+                                class_name="text-3xl font-bold text-gray-900",
+                            ),
+                            class_name="flex justify-between items-center mb-8",
+                        ),
+                        summary_cards(),
+                        rx.el.div(
+                            add_cost_form(),
+                            costs_table(),
+                            class_name="grid md:grid-cols-3 gap-8 mt-8",
+                        ),
+                        on_mount=CostState.get_costs,
                     ),
-                    on_mount=CostState.get_costs,
                 ),
                 rx.el.div(
                     rx.el.h1(

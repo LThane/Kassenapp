@@ -23,7 +23,11 @@ class QuickEntryState(BaseState):
     @rx.event
     def get_all_members(self):
         with db_session() as session:
-            self.members = session.exec(select(Member).order_by(Member.name)).all()
+            self.members = session.exec(
+                select(Member)
+                .where(Member.email != "acf@admin.com")
+                .order_by(Member.name)
+            ).all()
             for member in self.members:
                 if member.id not in self.form_states:
                     self.form_states[member.id] = {
