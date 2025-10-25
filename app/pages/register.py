@@ -7,9 +7,7 @@ def register_page() -> rx.Component:
     """The register page."""
     return auth_layout(
         rx.el.div(
-            rx.el.h2(
-                "Konto erstellen", class_name="text-2xl font-bold text-gray-900"
-            ),
+            rx.el.h2("Konto erstellen", class_name="text-2xl font-bold text-gray-900"),
             rx.el.p(
                 "Tritt der Gemeinschaft bei und beginne, Ausgaben zu erfassen.",
                 class_name="text-gray-600 mt-1",

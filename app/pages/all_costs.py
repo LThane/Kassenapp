@@ -45,8 +45,8 @@ def summary_cards() -> rx.Component:
             rx.el.h3(
                 "Gesamtausgaben (alle)", class_name="text-sm font-medium text-gray-500"
             ),
-                rx.el.p(
-                    "€" + AllCostsState.total_spent_all.to_string(),
+            rx.el.p(
+                "€" + AllCostsState.total_spent_all.to_string(),
                 class_name="mt-1 text-3xl font-semibold text-gray-900",
             ),
             class_name="p-6 bg-white rounded-xl border border-gray-200 shadow-sm",
@@ -63,16 +63,19 @@ def summary_cards() -> rx.Component:
         ),
         rx.el.div(
             rx.el.h3(
-                "Durchschn. Kosten (alle)", class_name="text-sm font-medium text-gray-500"
+                "Durchschn. Kosten (alle)",
+                class_name="text-sm font-medium text-gray-500",
             ),
-                rx.el.p(
-                    "€" + AllCostsState.average_cost_all.to_string(),
+            rx.el.p(
+                "€" + AllCostsState.average_cost_all.to_string(),
                 class_name="mt-1 text-3xl font-semibold text-gray-900",
             ),
             class_name="p-6 bg-white rounded-xl border border-gray-200 shadow-sm",
         ),
         rx.el.div(
-            rx.el.h3("Aktive Mitglieder", class_name="text-sm font-medium text-gray-500"),
+            rx.el.h3(
+                "Aktive Mitglieder", class_name="text-sm font-medium text-gray-500"
+            ),
             rx.el.p(
                 AllCostsState.total_members,
                 class_name="mt-1 text-3xl font-semibold text-gray-900",
@@ -97,7 +100,7 @@ def weekly_cost_section(week_data: list) -> rx.Component:
                 f"Woche ab {week_data[0]}", class_name="text-xl font-bold text-gray-800"
             ),
             rx.el.p(
-                 f"Total: €{week_data[2]:.2f}",
+                f"Total: €{week_data[2]:.2f}",
                 class_name="text-lg font-semibold text-violet-600",
             ),
             class_name="flex justify-between items-center p-4 bg-gray-100 rounded-t-lg",
@@ -114,7 +117,7 @@ def member_cost_section(member_data: list) -> rx.Component:
         rx.el.div(
             rx.el.h3(member_data[0], class_name="font-semibold text-gray-700"),
             rx.el.p(
-                 f"Subtotal: €{member_data[2]:.2f}",
+                f"Subtotal: €{member_data[2]:.2f}",
                 class_name="font-semibold text-gray-600",
             ),
             class_name="flex justify-between items-center p-3 bg-gray-50",
@@ -124,19 +127,19 @@ def member_cost_section(member_data: list) -> rx.Component:
                 rx.el.thead(
                     rx.el.tr(
                         rx.el.th(
-                                    "Beschreibung",
+                            "Beschreibung",
                             class_name="px-4 py-2 text-left text-sm font-semibold text-gray-600 w-2/5",
                         ),
                         rx.el.th(
-                                    "Betrag",
+                            "Betrag",
                             class_name="px-4 py-2 text-left text-sm font-semibold text-gray-600 w-1/5",
                         ),
                         rx.el.th(
-                                    "Datum",
+                            "Datum",
                             class_name="px-4 py-2 text-left text-sm font-semibold text-gray-600 w-1/5",
                         ),
                         rx.el.th(
-                                    "Kategorie",
+                            "Kategorie",
                             class_name="px-4 py-2 text-left text-sm font-semibold text-gray-600 w-1/5",
                         ),
                     )
@@ -153,7 +156,7 @@ def all_cost_row(cost: CostWithMember) -> rx.Component:
     return rx.el.tr(
         rx.el.td(cost["description"], class_name="px-4 py-3 text-sm text-gray-800"),
         rx.el.td(
-              "€" + cost["amount"].to_string(),
+            "€" + cost["amount"].to_string(),
             class_name="px-4 py-3 text-sm text-gray-800",
         ),
         rx.el.td(cost["date"], class_name="px-4 py-3 text-sm text-gray-800"),

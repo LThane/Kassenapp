@@ -34,7 +34,9 @@ def profile_page() -> rx.Component:
                     ),
                     class_name="mt-8",
                 ),
-                rx.el.div(rx.el.p("Profil wird geladen...", class_name="text-gray-500")),
+                rx.el.div(
+                    rx.el.p("Profil wird geladen...", class_name="text-gray-500")
+                ),
             ),
             class_name="p-8 bg-white rounded-xl border border-gray-200 shadow-sm",
         )

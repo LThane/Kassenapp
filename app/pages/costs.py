@@ -61,7 +61,10 @@ def summary_cards() -> rx.Component:
             class_name="p-6 bg-white rounded-xl border border-gray-200 shadow-sm",
         ),
         rx.el.div(
-            rx.el.h3("Durchschnittliche Kosten", class_name="text-sm font-medium text-gray-500"),
+            rx.el.h3(
+                "Durchschnittliche Kosten",
+                class_name="text-sm font-medium text-gray-500",
+            ),
             rx.el.p(
                 "€" + CostState.average_cost.to_string(),
                 class_name="mt-1 text-3xl font-semibold text-gray-900",
@@ -74,7 +77,10 @@ def summary_cards() -> rx.Component:
 
 def add_cost_form() -> rx.Component:
     return rx.el.div(
-    rx.el.h2("Neue Ausgabe hinzufügen", class_name="text-xl font-semibold text-gray-800 mb-4"),
+        rx.el.h2(
+            "Neue Ausgabe hinzufügen",
+            class_name="text-xl font-semibold text-gray-800 mb-4",
+        ),
         rx.el.form(
             rx.el.div(
                 rx.el.label(

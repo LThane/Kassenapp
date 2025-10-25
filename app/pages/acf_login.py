@@ -1,26 +1,25 @@
 import reflex as rx
 from app.components.auth_layout import auth_layout
-from app.states.auth_state import MyAuthState
+from app.states.acf_state import ACFState
 
 
-def login_page() -> rx.Component:
-    """The login page."""
+def acf_login_page() -> rx.Component:
+    """The ACF login page."""
     return auth_layout(
         rx.el.div(
             rx.el.h2(
-                "Melde dich bei deinem Konto an",
-                class_name="text-2xl font-bold text-gray-900",
+                "ACF Quick Entry Login", class_name="text-2xl font-bold text-gray-900"
             ),
-            rx.el.p("Willkommen zurück!", class_name="text-gray-600 mt-1"),
+            rx.el.p("Special access for cost entry.", class_name="text-gray-600 mt-1"),
             rx.el.form(
                 rx.el.div(
                     rx.el.label(
-                        "E-Mail", class_name="block text-sm font-medium text-gray-700"
+                        "Username", class_name="block text-sm font-medium text-gray-700"
                     ),
                     rx.el.input(
-                        type="email",
-                        id="email",
-                        placeholder="you@example.com",
+                        type="text",
+                        id="username",
+                        placeholder="ACF",
                         required=True,
                         class_name="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-800 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500",
                     ),
@@ -28,33 +27,24 @@ def login_page() -> rx.Component:
                 ),
                 rx.el.div(
                     rx.el.label(
-                        "Passwort", class_name="block text-sm font-medium text-gray-700"
+                        "Password", class_name="block text-sm font-medium text-gray-700"
                     ),
                     rx.el.input(
                         type="password",
                         id="password",
-                        placeholder="••••••••",
+                        placeholder="•••",
                         required=True,
                         class_name="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-800 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500",
                     ),
                     class_name="space-y-1",
                 ),
                 rx.el.button(
-                    "Anmelden",
+                    "Login",
                     type="submit",
                     class_name="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500",
                 ),
                 class_name="space-y-6",
-                on_submit=MyAuthState.on_login,
-            ),
-            rx.el.p(
-                "Du hast noch kein Konto? ",
-                rx.el.a(
-                    "Registrieren",
-                    href="/register",
-                    class_name="font-medium text-violet-600 hover:text-violet-500",
-                ),
-                class_name="mt-4 text-center text-sm text-gray-600",
+                on_submit=ACFState.acf_login,
             ),
             class_name="space-y-6",
         )
