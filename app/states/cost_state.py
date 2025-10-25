@@ -45,7 +45,10 @@ class CostState(BaseState):
         auth_state = await self.get_state(MyAuthState)
         if not auth_state.is_authenticated:
             return
-        member_id = auth_state.current_user.id
+        current_user = auth_state.current_user
+        member_id = (
+            current_user["id"] if isinstance(current_user, dict) else current_user.id
+        )
         with db_session() as session:
             results = session.exec(
                 select(Cost)
@@ -87,12 +90,18 @@ class CostState(BaseState):
             yield rx.toast.error("Invalid category selected.")
             return
         with db_session() as session:
+            current_user = auth_state.current_user
+            member_id = (
+                current_user["id"]
+                if isinstance(current_user, dict)
+                else current_user.id
+            )
             new_cost = Cost(
                 description=form["description"],
                 amount=amount,
                 date=form["date"],
                 category=form["category"],
-                member_id=auth_state.current_user.id,
+                member_id=member_id,
             )
             session.add(new_cost)
             session.commit()
@@ -119,12 +128,18 @@ class CostState(BaseState):
             yield rx.toast.error("Invalid drink type.")
             return
         with db_session() as session:
+            current_user = auth_state.current_user
+            member_id = (
+                current_user["id"]
+                if isinstance(current_user, dict)
+                else current_user.id
+            )
             new_cost = Cost(
                 description=description,
                 amount=amount,
                 date=self.today_date,
                 category=category,
-                member_id=auth_state.current_user.id,
+                member_id=member_id,
             )
             session.add(new_cost)
             session.commit()

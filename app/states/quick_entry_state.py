@@ -113,8 +113,17 @@ class QuickEntryState(BaseState):
                 if m.id == member_id:
                     member_name = m.name.split()[0]
                     break
-            if auth_state.current_user.id != member_id:
-                notification_message = f"{auth_state.current_user.name} hat Kosten (€{amount:.2f}) für dich hinzugefügt."
+            auth_user = auth_state.current_user
+            auth_user_id = (
+                auth_user.get("id") if isinstance(auth_user, dict) else auth_user.id
+            )
+            auth_user_name = (
+                auth_user.get("name") if isinstance(auth_user, dict) else auth_user.name
+            )
+            if auth_user_id != member_id:
+                notification_message = (
+                    f"{auth_user_name} hat Kosten (€{amount:.2f}) für dich hinzugefügt."
+                )
                 new_notification = Notification(
                     member_id=member_id, message=notification_message
                 )
@@ -161,8 +170,17 @@ class QuickEntryState(BaseState):
                 if m.id == member_id:
                     member_name = m.name.split()[0]
                     break
-            if auth_state.current_user.id != member_id:
-                notification_message = f"{auth_state.current_user.name} hat ein '{description}' für dich hinzugefügt."
+            auth_user = auth_state.current_user
+            auth_user_id = (
+                auth_user.get("id") if isinstance(auth_user, dict) else auth_user.id
+            )
+            auth_user_name = (
+                auth_user.get("name") if isinstance(auth_user, dict) else auth_user.name
+            )
+            if auth_user_id != member_id:
+                notification_message = (
+                    f"{auth_user_name} hat ein '{description}' für dich hinzugefügt."
+                )
                 new_notification = Notification(
                     member_id=member_id, message=notification_message
                 )

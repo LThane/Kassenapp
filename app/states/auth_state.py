@@ -4,11 +4,12 @@ from sqlmodel import select
 from .base_state import BaseState
 from app.models import Member, RegisterForm, LoginForm
 from app.database import db_session
+from typing import Union
 
 
 class MyAuthState(BaseState):
     is_authenticated: bool = False
-    current_user: Member = Member(id=0, name="", email="", password="")
+    current_user: Union[Member, dict] = Member(id=0, name="", email="", password="")
 
     def _hash_password(self, password: str) -> str:
         return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
