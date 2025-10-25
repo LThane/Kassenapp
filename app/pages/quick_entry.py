@@ -92,6 +92,20 @@ def member_entry_row(member: Member) -> rx.Component:
                 on_click=lambda: QuickEntryState.add_cost_for_member(member.id),
                 class_name="bg-violet-600 text-white px-4 py-2 rounded-md hover:bg-violet-700 transition-colors shadow-sm",
             ),
+            rx.el.button(
+                rx.icon("cup-soda", size=20),
+                on_click=lambda: QuickEntryState.add_quick_drink_for_member(
+                    member.id, "non-alcoholic"
+                ),
+                class_name="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors shadow-sm",
+            ),
+            rx.el.button(
+                rx.icon("beer", size=20),
+                on_click=lambda: QuickEntryState.add_quick_drink_for_member(
+                    member.id, "alcoholic"
+                ),
+                class_name="bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600 transition-colors shadow-sm",
+            ),
             class_name="flex flex-wrap items-center gap-2",
         ),
         class_name="p-4 bg-white rounded-xl border border-gray-200 shadow-sm",

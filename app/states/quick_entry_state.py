@@ -93,3 +93,32 @@ class QuickEntryState(BaseState):
             "date": self.today_date,
         }
         return rx.toast.success(f"Cost added for member ID {member_id}")
+
+    @rx.event
+    def add_quick_drink_for_member(self, member_id: int, drink_type: str):
+        if drink_type == "non-alcoholic":
+            category = "Getränke (nicht-alkoholisch) - €1.50"
+            amount = 1.5
+            description = "Nicht-alkoholisches Getränk"
+        elif drink_type == "alcoholic":
+            category = "Getränke (alkoholisch) - €2.50"
+            amount = 2.5
+            description = "Alkoholisches Getränk"
+        else:
+            return rx.toast.error("Invalid drink type.")
+        with db_session() as session:
+            new_cost = Cost(
+                description=description,
+                amount=amount,
+                date=self.today_date,
+                category=category,
+                member_id=member_id,
+            )
+            session.add(new_cost)
+            session.commit()
+        member_name = ""
+        for m in self.members:
+            if m.id == member_id:
+                member_name = m.name.split()[0]
+                break
+        return rx.toast.success(f"Drink added for {member_name}!")

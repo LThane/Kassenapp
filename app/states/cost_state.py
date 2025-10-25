@@ -102,6 +102,36 @@ class CostState(BaseState):
         yield rx.toast.success("Cost added successfully!")
 
     @rx.event
+    async def add_quick_drink(self, drink_type: str):
+        auth_state = await self.get_state(MyAuthState)
+        if not auth_state.is_authenticated:
+            yield rx.toast.error("You must be logged in to add a cost.")
+            return
+        if drink_type == "non-alcoholic":
+            category = "Getränke (nicht-alkoholisch) - €1.50"
+            amount = 1.5
+            description = "Nicht-alkoholisches Getränk"
+        elif drink_type == "alcoholic":
+            category = "Getränke (alkoholisch) - €2.50"
+            amount = 2.5
+            description = "Alkoholisches Getränk"
+        else:
+            yield rx.toast.error("Invalid drink type.")
+            return
+        with db_session() as session:
+            new_cost = Cost(
+                description=description,
+                amount=amount,
+                date=self.today_date,
+                category=category,
+                member_id=auth_state.current_user.id,
+            )
+            session.add(new_cost)
+            session.commit()
+        yield CostState.get_costs
+        yield rx.toast.success(f"{description} added!")
+
+    @rx.event
     def delete_cost(self, cost_id: int):
         with db_session() as session:
             cost_to_delete = session.get(Cost, cost_id)

@@ -37,6 +37,7 @@ def costs_page() -> rx.Component:
                         ),
                         summary_cards(),
                         rx.el.div(
+                            quick_add_buttons(),
                             add_cost_form(),
                             costs_table(),
                             class_name="grid md:grid-cols-3 gap-8 mt-8",
@@ -91,6 +92,28 @@ def summary_cards() -> rx.Component:
             class_name="p-6 bg-white rounded-xl border border-gray-200 shadow-sm",
         ),
         class_name="grid md:grid-cols-3 gap-6",
+    )
+
+
+def quick_add_buttons() -> rx.Component:
+    return rx.el.div(
+        rx.el.h2(
+            "Quick Actions", class_name="text-xl font-semibold text-gray-800 mb-4"
+        ),
+        rx.el.div(
+            rx.el.button(
+                "Getränk (nicht-alkoholisch) - €1.50",
+                on_click=lambda: CostState.add_quick_drink("non-alcoholic"),
+                class_name="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500",
+            ),
+            rx.el.button(
+                "Getränk (alkoholisch) - €2.50",
+                on_click=lambda: CostState.add_quick_drink("alcoholic"),
+                class_name="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500",
+            ),
+            class_name="space-y-3",
+        ),
+        class_name="p-6 bg-white rounded-xl border border-gray-200 shadow-sm md:col-span-1 mb-8 md:mb-0",
     )
 
 
