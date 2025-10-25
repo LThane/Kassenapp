@@ -31,10 +31,16 @@ class NotificationState(BaseState):
         auth_state = await self.get_state(MyAuthState)
         if not auth_state.is_authenticated:
             return
+        current_user = auth_state.current_user
+        member_id = (
+            current_user["id"] if isinstance(current_user, dict) else current_user.id
+        )
+        if not member_id:
+            return
         with db_session() as session:
             results = session.exec(
                 select(Notification)
-                .where(Notification.member_id == auth_state.current_user.id)
+                .where(Notification.member_id == member_id)
                 .order_by(Notification.created_at.desc())
                 .limit(20)
             ).all()
@@ -59,11 +65,16 @@ class NotificationState(BaseState):
         auth_state = await self.get_state(MyAuthState)
         if not auth_state.is_authenticated:
             return
+        current_user = auth_state.current_user
+        member_id = (
+            current_user["id"] if isinstance(current_user, dict) else current_user.id
+        )
+        if not member_id:
+            return
         with db_session() as session:
             unread_notifications = session.exec(
                 select(Notification).where(
-                    Notification.member_id == auth_state.current_user.id,
-                    Notification.is_read == False,
+                    Notification.member_id == member_id, Notification.is_read == False
                 )
             ).all()
             for notification in unread_notifications:

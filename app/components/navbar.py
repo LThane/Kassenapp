@@ -66,7 +66,6 @@ def authenticated_nav() -> rx.Component:
             "Abmelden",
             on_click=MyAuthState.on_logout,
             class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
-            variant="ghost",
         ),
         class_name="flex items-center gap-4",
     )
@@ -122,7 +121,7 @@ def mobile_menu() -> rx.Component:
                     class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
                     on_click=UIState.close_mobile_menu,
                 ),
-                rx.el.div(notification_bell(), class_name="px-4 py-2"),
+                rx.el.div(mobile_notification_bell(), class_name="px-4 py-2 border-t"),
                 rx.el.button(
                     "Abmelden",
                     on_click=MyAuthState.on_logout,
@@ -169,7 +168,7 @@ def notification_bell() -> rx.Component:
             class_name="relative rounded-full p-2 text-gray-600 hover:text-violet-600 focus:outline-none",
         ),
         rx.cond(NotificationState.show_notifications, notification_dropdown()),
-        class_name="relative md:block hidden",
+        class_name="relative",
     )
 
 
@@ -195,7 +194,33 @@ def notification_dropdown() -> rx.Component:
             ),
             class_name="max-h-80 overflow-y-auto divide-y",
         ),
-        class_name="absolute right-0 mt-2 w-80 md:w-80 bg-white rounded-lg shadow-lg border z-50 w-full",
+        class_name="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-50",
+    )
+
+
+def mobile_notification_bell() -> rx.Component:
+    return rx.el.div(
+        rx.el.button(
+            rx.el.div(
+                rx.icon("bell", size=20),
+                rx.el.span("Benachrichtigungen"),
+                class_name="flex items-center gap-2",
+            ),
+            rx.cond(
+                NotificationState.unread_count > 0,
+                rx.el.span(
+                    NotificationState.unread_count.to_string(),
+                    class_name="ml-auto flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs text-white",
+                ),
+            ),
+            on_click=[
+                NotificationState.toggle_notifications,
+                NotificationState.load_notifications,
+            ],
+            class_name="w-full flex items-center justify-between text-gray-700 hover:bg-gray-50",
+        ),
+        rx.cond(NotificationState.show_notifications, notification_dropdown()),
+        class_name="relative w-full",
     )
 
 
