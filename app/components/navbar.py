@@ -122,11 +122,7 @@ def mobile_menu() -> rx.Component:
                     class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
                     on_click=UIState.close_mobile_menu,
                 ),
-                rx.el.a(
-                    "Benachrichtigungen",
-                    on_click=NotificationState.toggle_notifications,
-                    class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
-                ),
+                rx.el.div(notification_bell(), class_name="px-4 py-2"),
                 rx.el.button(
                     "Abmelden",
                     on_click=MyAuthState.on_logout,
@@ -173,7 +169,7 @@ def notification_bell() -> rx.Component:
             class_name="relative rounded-full p-2 text-gray-600 hover:text-violet-600 focus:outline-none",
         ),
         rx.cond(NotificationState.show_notifications, notification_dropdown()),
-        class_name="relative",
+        class_name="relative md:block hidden",
     )
 
 
@@ -199,7 +195,7 @@ def notification_dropdown() -> rx.Component:
             ),
             class_name="max-h-80 overflow-y-auto divide-y",
         ),
-        class_name="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-50",
+        class_name="absolute right-0 mt-2 w-80 md:w-80 bg-white rounded-lg shadow-lg border z-50 w-full",
     )
 
 
@@ -212,8 +208,8 @@ def notification_item(notification: Notification) -> rx.Component:
         ),
         class_name=rx.cond(
             notification.is_read,
-            "p-4 hover:bg-gray-50",
-            "p-4 bg-violet-50 hover:bg-violet-100",
+            "p-4 hover:bg-gray-50 min-h-[60px]",
+            "p-4 bg-violet-50 hover:bg-violet-100 min-h-[60px]",
         ),
         on_click=NotificationState.mark_as_read(notification.id),
     )

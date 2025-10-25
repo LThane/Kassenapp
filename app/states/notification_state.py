@@ -5,6 +5,7 @@ from app.models import Notification
 from .auth_state import MyAuthState
 from app.database import db_session
 from datetime import datetime
+from typing import cast
 
 
 class NotificationState(BaseState):
@@ -36,29 +37,32 @@ class NotificationState(BaseState):
     @rx.event
     def mark_as_read(self, notification_id: int):
         with db_session() as session:
-            notification = session.get(Notification, notification_id)
-            if notification and (not notification.is_read):
-                notification.is_read = True
-                session.add(notification)
+            db_notification = session.get(Notification, notification_id)
+            if db_notification and (not db_notification.is_read):
+                db_notification.is_read = True
+                session.add(db_notification)
                 session.commit()
-                session.refresh(notification)
-        for i, n in enumerate(self.notifications):
-            if n.id == notification_id:
-                self.notifications[i] = notification
-                break
+                session.refresh(db_notification)
+                for i, n in enumerate(self.notifications):
+                    if n.id == notification_id:
+                        self.notifications[i] = db_notification
+                        break
 
     @rx.event
     async def mark_all_as_read(self):
+        auth_state = await self.get_state(MyAuthState)
+        if not auth_state.is_authenticated:
+            return
         with db_session() as session:
-            auth_state = await self.get_state(MyAuthState)
-            unread = session.exec(
+            unread_notifications = session.exec(
                 select(Notification).where(
                     Notification.member_id == auth_state.current_user.id,
                     Notification.is_read == False,
                 )
             ).all()
-            for notification in unread:
+            for notification in unread_notifications:
                 notification.is_read = True
                 session.add(notification)
-            session.commit()
-        return NotificationState.load_notifications
+            if unread_notifications:
+                session.commit()
+        yield NotificationState.load_notifications
