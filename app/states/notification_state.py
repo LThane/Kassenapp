@@ -48,9 +48,9 @@ class NotificationState(BaseState):
                 break
 
     @rx.event
-    def mark_all_as_read(self):
+    async def mark_all_as_read(self):
         with db_session() as session:
-            auth_state = self.get_state_sync(MyAuthState)
+            auth_state = await self.get_state(MyAuthState)
             unread = session.exec(
                 select(Notification).where(
                     Notification.member_id == auth_state.current_user.id,
