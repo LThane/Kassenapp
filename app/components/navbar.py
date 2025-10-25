@@ -23,11 +23,15 @@ def navbar() -> rx.Component:
                 rx.cond(MyAuthState.is_authenticated, authenticated_nav(), guest_nav()),
                 class_name="hidden md:flex items-center gap-4",
             ),
-            rx.el.button(
-                rx.icon("menu", size=22),
-                on_click=UIState.toggle_mobile_menu,
-                class_name="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-violet-600 focus:outline-none",
-                variant="ghost",
+            rx.el.div(
+                rx.cond(MyAuthState.is_authenticated, notification_bell()),
+                rx.el.button(
+                    rx.icon("menu", size=22),
+                    on_click=UIState.toggle_mobile_menu,
+                    class_name="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-violet-600 focus:outline-none",
+                    variant="ghost",
+                ),
+                class_name="flex items-center gap-2 md:hidden",
             ),
             class_name="flex items-center justify-between container mx-auto px-4",
         ),
@@ -61,7 +65,7 @@ def authenticated_nav() -> rx.Component:
             href="/profile",
             class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
         ),
-        notification_bell(),
+        rx.el.div(notification_bell(), class_name="hidden md:block"),
         rx.el.button(
             "Abmelden",
             on_click=MyAuthState.on_logout,
@@ -121,7 +125,6 @@ def mobile_menu() -> rx.Component:
                     class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
                     on_click=UIState.close_mobile_menu,
                 ),
-                rx.el.div(mobile_notification_bell(), class_name="px-4 py-2 border-t"),
                 rx.el.button(
                     "Abmelden",
                     on_click=MyAuthState.on_logout,
@@ -195,32 +198,6 @@ def notification_dropdown() -> rx.Component:
             class_name="max-h-80 overflow-y-auto divide-y",
         ),
         class_name="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-50",
-    )
-
-
-def mobile_notification_bell() -> rx.Component:
-    return rx.el.div(
-        rx.el.button(
-            rx.el.div(
-                rx.icon("bell", size=20),
-                rx.el.span("Benachrichtigungen"),
-                class_name="flex items-center gap-2",
-            ),
-            rx.cond(
-                NotificationState.unread_count > 0,
-                rx.el.span(
-                    NotificationState.unread_count.to_string(),
-                    class_name="ml-auto flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs text-white",
-                ),
-            ),
-            on_click=[
-                NotificationState.toggle_notifications,
-                NotificationState.load_notifications,
-            ],
-            class_name="w-full flex items-center justify-between text-gray-700 hover:bg-gray-50",
-        ),
-        rx.cond(NotificationState.show_notifications, notification_dropdown()),
-        class_name="relative w-full",
     )
 
 
