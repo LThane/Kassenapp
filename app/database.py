@@ -25,8 +25,22 @@ def db_session():
 
 def seed_test_data():
     with db_session() as session:
-        has_members = session.exec(select(Member)).first()
-        if has_members:
+        admin_user = session.exec(
+            select(Member).where(Member.email == "acf@admin.com")
+        ).first()
+        if not admin_user:
+            hashed_password = bcrypt.hashpw(
+                "admin123".encode("utf-8"), bcrypt.gensalt()
+            ).decode("utf-8")
+            admin_member = Member(
+                name="ACF Admin", email="acf@admin.com", password=hashed_password
+            )
+            session.add(admin_member)
+            session.commit()
+        has_other_members = session.exec(
+            select(Member).where(Member.email != "acf@admin.com")
+        ).first()
+        if has_other_members:
             return
         members_data = [
             {
