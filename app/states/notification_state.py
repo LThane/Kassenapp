@@ -12,9 +12,15 @@ class NotificationState(BaseState):
     notifications: list[Notification] = []
     show_notifications: bool = False
 
+    def _is_notification_unread(self, notification: Notification | dict) -> bool:
+        """Safely checks if a notification is unread, handling both objects and dicts."""
+        if isinstance(notification, dict):
+            return not notification.get("is_read", True)
+        return not notification.is_read
+
     @rx.var
     def unread_count(self) -> int:
-        return sum((1 for n in self.notifications if not n.is_read))
+        return sum((1 for n in self.notifications if self._is_notification_unread(n)))
 
     @rx.event
     def toggle_notifications(self):
