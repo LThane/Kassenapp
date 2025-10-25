@@ -9,6 +9,7 @@ import logging
 
 class QuickEntryState(BaseState):
     members: list[Member] = []
+    search_query: str = ""
     categories: dict[str, float | None] = {
         "Getränke (nicht-alkoholisch) - €1.50": 1.5,
         "Getränke (alkoholisch) - €2.50": 2.5,
@@ -19,6 +20,19 @@ class QuickEntryState(BaseState):
     @rx.var
     def today_date(self) -> str:
         return datetime.now().strftime("%Y-%m-%d")
+
+    @rx.event
+    def set_search_query(self, query: str):
+        """Sets the search query for filtering members."""
+        self.search_query = query
+
+    @rx.var
+    def filtered_members(self) -> list[Member]:
+        """Filters members based on the search query."""
+        if not self.search_query.strip():
+            return self.members
+        query = self.search_query.lower()
+        return [member for member in self.members if query in member.name.lower()]
 
     @rx.event
     def get_all_members(self):

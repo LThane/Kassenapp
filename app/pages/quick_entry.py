@@ -36,8 +36,13 @@ def quick_entry_view() -> rx.Component:
             rx.el.h1("Quick Cost Entry", class_name="text-3xl font-bold text-gray-900"),
             class_name="flex justify-between items-center mb-8",
         ),
+        rx.el.input(
+            placeholder="Search members by name...",
+            on_change=QuickEntryState.set_search_query.debounce(300),
+            class_name="w-full max-w-sm px-4 py-2 mb-6 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500",
+        ),
         rx.el.div(
-            rx.foreach(QuickEntryState.members, member_entry_row),
+            rx.foreach(QuickEntryState.filtered_members, member_entry_row),
             class_name="space-y-4",
         ),
     )
