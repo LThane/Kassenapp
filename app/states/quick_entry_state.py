@@ -2,6 +2,7 @@ import reflex as rx
 from sqlmodel import select
 from .base_state import BaseState
 from app.models import Member, Cost, Notification
+from .auth_state import MyAuthState
 from app.database import db_session
 from datetime import datetime
 import logging
@@ -68,28 +69,36 @@ class QuickEntryState(BaseState):
                 self.form_states[member_id]["amount"] = ""
 
     @rx.event
-    def add_cost_for_member(self, member_id: int):
+    async def add_cost_for_member(self, member_id: int):
+        auth_state = await self.get_state(MyAuthState)
+        if not auth_state.is_authenticated:
+            yield rx.toast.error("You must be logged in.")
+            return
         form_data = self.form_states.get(member_id, {})
         category = form_data.get("category", "")
         amount_str = form_data.get("amount", "")
         date = form_data.get("date", self.today_date)
         description = form_data.get("description", "")
         if not category:
-            return rx.toast.error("Category is required.")
+            yield rx.toast.error("Category is required.")
+            return
         amount: float
         category_value = self.categories.get(category)
         if category == "Anderes":
             if not amount_str:
-                return rx.toast.error("Amount is required for 'Anderes' category.")
+                yield rx.toast.error("Amount is required for 'Anderes' category.")
+                return
             try:
                 amount = float(amount_str)
             except (ValueError, TypeError) as e:
                 logging.exception(f"Error converting amount to float: {e}")
-                return rx.toast.error("Invalid amount.")
+                yield rx.toast.error("Invalid amount.")
+                return
         elif category_value is not None:
             amount = category_value
         else:
-            return rx.toast.error("Invalid category selected.")
+            yield rx.toast.error("Invalid category selected.")
+            return
         with db_session() as session:
             new_cost = Cost(
                 description=description,
@@ -99,6 +108,18 @@ class QuickEntryState(BaseState):
                 member_id=member_id,
             )
             session.add(new_cost)
+            member_name = ""
+            for m in self.members:
+                if m.id == member_id:
+                    member_name = m.name.split()[0]
+                    break
+            if auth_state.current_user.id != member_id:
+                notification_message = f"{auth_state.current_user.name} hat Kosten (€{amount:.2f}) für dich hinzugefügt."
+                new_notification = Notification(
+                    member_id=member_id, message=notification_message
+                )
+                session.add(new_notification)
+                yield rx.toast.info(f"Benachrichtigung an {member_name} gesendet.")
             session.commit()
         self.form_states[member_id] = {
             "category": "",
@@ -106,10 +127,15 @@ class QuickEntryState(BaseState):
             "description": "",
             "date": self.today_date,
         }
-        return rx.toast.success(f"Cost added for member ID {member_id}")
+        yield rx.toast.success(f"Cost added for {member_name}!")
+        return
 
     @rx.event
-    def add_quick_drink_for_member(self, member_id: int, drink_type: str):
+    async def add_quick_drink_for_member(self, member_id: int, drink_type: str):
+        auth_state = await self.get_state(MyAuthState)
+        if not auth_state.is_authenticated:
+            yield rx.toast.error("You must be logged in.")
+            return
         if drink_type == "non-alcoholic":
             category = "Getränke (nicht-alkoholisch) - €1.50"
             amount = 1.5
@@ -119,7 +145,8 @@ class QuickEntryState(BaseState):
             amount = 2.5
             description = "Alkoholisches Getränk"
         else:
-            return rx.toast.error("Invalid drink type.")
+            yield rx.toast.error("Invalid drink type.")
+            return
         with db_session() as session:
             new_cost = Cost(
                 description=description,
@@ -129,18 +156,17 @@ class QuickEntryState(BaseState):
                 member_id=member_id,
             )
             session.add(new_cost)
-            notification_message = (
-                f"Admin hat ein '{description}' für dich hinzugefügt."
-            )
-            new_notification = Notification(
-                member_id=member_id, message=notification_message
-            )
-            session.add(new_notification)
+            member_name = ""
+            for m in self.members:
+                if m.id == member_id:
+                    member_name = m.name.split()[0]
+                    break
+            if auth_state.current_user.id != member_id:
+                notification_message = f"{auth_state.current_user.name} hat ein '{description}' für dich hinzugefügt."
+                new_notification = Notification(
+                    member_id=member_id, message=notification_message
+                )
+                session.add(new_notification)
+                yield rx.toast.info(f"Benachrichtigung an {member_name} gesendet.")
             session.commit()
-        member_name = ""
-        for m in self.members:
-            if m.id == member_id:
-                member_name = m.name.split()[0]
-                break
         yield rx.toast.success(f"Drink added for {member_name}!")
-        yield rx.toast.info(f"Benachrichtigung an {member_name} gesendet.")
