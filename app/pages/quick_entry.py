@@ -44,8 +44,7 @@ def quick_entry_view() -> rx.Component:
 
 
 def member_entry_row(member: Member) -> rx.Component:
-    member_id = member.id
-    form_state = QuickEntryState.form_states[member_id]
+    form_state = QuickEntryState.get_form_state[member.id]
     is_custom_category = form_state["category"] == "Anderes"
     return rx.el.div(
         rx.el.h3(member.name, class_name="text-lg font-semibold text-gray-800 mb-2"),
@@ -58,14 +57,14 @@ def member_entry_row(member: Member) -> rx.Component:
                 ),
                 value=form_state["category"],
                 on_change=lambda value: QuickEntryState.set_form_field(
-                    member_id, "category", value
+                    member.id, "category", value
                 ),
                 class_name="flex-1 min-w-[150px] px-3 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500",
             ),
             rx.el.input(
                 placeholder="Amount",
                 on_change=lambda value: QuickEntryState.set_form_field(
-                    member_id, "amount", value
+                    member.id, "amount", value
                 ),
                 is_disabled=~is_custom_category & (form_state["category"] != ""),
                 type="number",
@@ -75,7 +74,7 @@ def member_entry_row(member: Member) -> rx.Component:
             rx.el.input(
                 placeholder="Description (optional)",
                 on_change=lambda value: QuickEntryState.set_form_field(
-                    member_id, "description", value
+                    member.id, "description", value
                 ),
                 class_name="flex-1 min-w-[150px] px-3 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-800 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500",
                 default_value=form_state["description"],
@@ -83,14 +82,14 @@ def member_entry_row(member: Member) -> rx.Component:
             rx.el.input(
                 type="date",
                 on_change=lambda value: QuickEntryState.set_form_field(
-                    member_id, "date", value
+                    member.id, "date", value
                 ),
                 class_name="flex-1 min-w-[130px] px-3 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500",
                 default_value=form_state["date"],
             ),
             rx.el.button(
                 "Add",
-                on_click=lambda: QuickEntryState.add_cost_for_member(member_id),
+                on_click=lambda: QuickEntryState.add_cost_for_member(member.id),
                 class_name="bg-violet-600 text-white px-4 py-2 rounded-md hover:bg-violet-700 transition-colors shadow-sm",
             ),
             class_name="flex flex-wrap items-center gap-2",

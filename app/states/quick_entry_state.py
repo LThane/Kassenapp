@@ -33,8 +33,9 @@ class QuickEntryState(BaseState):
                         "date": self.today_date,
                     }
 
-    def _get_form_value(self, member_id: int, field: str) -> str:
-        return self.form_states.get(member_id, {}).get(field, "")
+    @rx.var
+    def get_form_state(self) -> dict[int, dict[str, str]]:
+        return self.form_states
 
     @rx.event
     def set_form_field(self, member_id: int, field: str, value: str):
