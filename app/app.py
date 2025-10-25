@@ -5,7 +5,6 @@ from app.pages.register import register_page
 from app.pages.profile import profile_page
 from app.pages.costs import costs_page
 from app.pages.all_costs import all_costs_page
-from app.pages.acf_login import acf_login_page
 from app.pages.quick_entry import quick_entry_page
 from app.states.auth_state import MyAuthState
 from app.database import init_db
@@ -28,5 +27,4 @@ app.add_page(register_page, route="/register")
 app.add_page(profile_page, route="/profile")
 app.add_page(costs_page, route="/costs")
 app.add_page(all_costs_page, route="/all-costs")
-app.add_page(acf_login_page, route="/acf-login")
 app.add_page(quick_entry_page, route="/quick-entry")

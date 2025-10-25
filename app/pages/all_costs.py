@@ -19,7 +19,15 @@ def all_costs_page() -> rx.Component:
                         class_name="flex justify-between items-center mb-8",
                     ),
                     summary_cards(),
-                    rx.el.div(all_costs_table(), class_name="mt-8"),
+                    rx.el.div(
+                        rx.el.input(
+                            placeholder="Nach Namen filtern...",
+                            on_change=AllCostsState.set_search_query.debounce(300),
+                            class_name="w-full max-w-sm px-4 py-2 mb-6 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500",
+                        ),
+                        class_name="mt-8",
+                    ),
+                    rx.el.div(all_costs_table(), class_name="mt-2"),
                     on_mount=AllCostsState.get_all_costs,
                 ),
                 rx.el.div(
@@ -88,7 +96,7 @@ def summary_cards() -> rx.Component:
 
 def all_costs_table() -> rx.Component:
     return rx.el.div(
-        rx.foreach(AllCostsState.costs_by_week_and_member, weekly_cost_section),
+        rx.foreach(AllCostsState.filtered_costs_by_week, weekly_cost_section),
         class_name="space-y-8",
     )
 

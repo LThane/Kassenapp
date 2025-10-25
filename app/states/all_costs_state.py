@@ -11,6 +11,12 @@ from datetime import datetime, timedelta
 
 class AllCostsState(BaseState):
     all_costs: list[CostWithMember] = []
+    search_query: str = ""
+
+    @rx.event
+    def set_search_query(self, query: str):
+        """Set the search query for filtering members."""
+        self.search_query = query
 
     @rx.var
     def total_spent_all(self) -> float:
@@ -37,11 +43,19 @@ class AllCostsState(BaseState):
         return len({c["member_id"] for c in self.all_costs})
 
     @rx.var
-    def costs_by_week_and_member(
+    def filtered_costs(self) -> list[CostWithMember]:
+        """Filter costs based on the search query."""
+        if not self.search_query.strip():
+            return self.all_costs
+        query = self.search_query.lower()
+        return [cost for cost in self.all_costs if query in cost["member_name"].lower()]
+
+    @rx.var
+    def filtered_costs_by_week(
         self,
     ) -> list[tuple[str, list[tuple[str, list[CostWithMember], float]], float]]:
         grouped = defaultdict(lambda: defaultdict(list))
-        for cost in self.all_costs:
+        for cost in self.filtered_costs:
             try:
                 cost_date = datetime.strptime(cost["date"], "%Y-%m-%d")
                 start_of_week = cost_date - timedelta(days=cost_date.weekday())

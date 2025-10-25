@@ -1,8 +1,6 @@
 import reflex as rx
 from app.states.auth_state import MyAuthState
 from app.states.ui_state import UIState
-from app.states.acf_state import ACFState
-from app.states.acf_state import ACFState
 
 
 def navbar() -> rx.Component:
@@ -20,11 +18,7 @@ def navbar() -> rx.Component:
                 href="/",
             ),
             rx.el.div(
-                rx.cond(
-                    MyAuthState.is_authenticated,
-                    authenticated_nav(),
-                    rx.cond(ACFState.is_acf_authenticated, acf_nav(), guest_nav()),
-                ),
+                rx.cond(MyAuthState.is_authenticated, authenticated_nav(), guest_nav()),
                 class_name="hidden md:flex items-center gap-4",
             ),
             rx.el.button(
@@ -53,6 +47,11 @@ def authenticated_nav() -> rx.Component:
             class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
         ),
         rx.el.a(
+            "Quick Entry",
+            href="/quick-entry",
+            class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
+        ),
+        rx.el.a(
             "Profil",
             href="/profile",
             class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
@@ -67,33 +66,11 @@ def authenticated_nav() -> rx.Component:
     )
 
 
-def acf_nav() -> rx.Component:
-    return rx.el.div(
-        rx.el.a(
-            "Quick Entry",
-            href="/quick-entry",
-            class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
-        ),
-        rx.el.button(
-            "ACF Logout",
-            on_click=ACFState.acf_logout,
-            class_name="text-sm font-medium text-red-500 hover:text-red-700 transition-colors",
-            variant="ghost",
-        ),
-        class_name="flex items-center gap-4",
-    )
-
-
 def guest_nav() -> rx.Component:
     return rx.el.div(
         rx.el.a(
             "Anmelden",
             href="/login",
-            class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
-        ),
-        rx.el.a(
-            "ACF Login",
-            href="/acf-login",
             class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
         ),
         rx.el.a(
@@ -125,6 +102,12 @@ def mobile_menu() -> rx.Component:
                     on_click=UIState.close_mobile_menu,
                 ),
                 rx.el.a(
+                    "Quick Entry",
+                    href="/quick-entry",
+                    class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
+                    on_click=UIState.close_mobile_menu,
+                ),
+                rx.el.a(
                     "Profil",
                     href="/profile",
                     class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
@@ -138,44 +121,20 @@ def mobile_menu() -> rx.Component:
                 ),
                 class_name="space-y-1 py-2",
             ),
-            rx.cond(
-                ACFState.is_acf_authenticated,
-                rx.el.div(
-                    rx.el.a(
-                        "Quick Entry",
-                        href="/quick-entry",
-                        class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
-                        on_click=UIState.close_mobile_menu,
-                    ),
-                    rx.el.button(
-                        "ACF Logout",
-                        on_click=ACFState.acf_logout,
-                        class_name="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-50",
-                        variant="ghost",
-                    ),
-                    class_name="space-y-1 py-2",
+            rx.el.div(
+                rx.el.a(
+                    "Anmelden",
+                    href="/login",
+                    class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
+                    on_click=UIState.close_mobile_menu,
                 ),
-                rx.el.div(
-                    rx.el.a(
-                        "Anmelden",
-                        href="/login",
-                        class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
-                        on_click=UIState.close_mobile_menu,
-                    ),
-                    rx.el.a(
-                        "ACF Login",
-                        href="/acf-login",
-                        class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
-                        on_click=UIState.close_mobile_menu,
-                    ),
-                    rx.el.a(
-                        "Registrieren",
-                        href="/register",
-                        class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
-                        on_click=UIState.close_mobile_menu,
-                    ),
-                    class_name="space-y-1 py-2",
+                rx.el.a(
+                    "Registrieren",
+                    href="/register",
+                    class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
+                    on_click=UIState.close_mobile_menu,
                 ),
+                class_name="space-y-1 py-2",
             ),
         ),
         class_name="md:hidden border-t border-gray-200 bg-white shadow-sm",

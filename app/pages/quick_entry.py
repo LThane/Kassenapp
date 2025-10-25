@@ -1,6 +1,6 @@
 import reflex as rx
 from app.components.navbar import main_layout
-from app.states.acf_state import ACFState
+from app.states.auth_state import MyAuthState
 from app.states.quick_entry_state import QuickEntryState
 from app.models import Member
 
@@ -8,7 +8,7 @@ from app.models import Member
 def quick_entry_page() -> rx.Component:
     return main_layout(
         rx.el.div(
-            rx.cond(ACFState.is_acf_authenticated, quick_entry_view(), login_prompt()),
+            rx.cond(MyAuthState.is_authenticated, quick_entry_view(), login_prompt()),
             on_mount=QuickEntryState.get_all_members,
         )
     )
@@ -16,13 +16,14 @@ def quick_entry_page() -> rx.Component:
 
 def login_prompt() -> rx.Component:
     return rx.el.div(
-        rx.el.h1("Access Denied", class_name="text-2xl font-bold text-gray-800"),
+        rx.el.h1("Bitte anmelden", class_name="text-2xl font-bold text-gray-800"),
         rx.el.p(
-            "Please log in as ACF to use this feature.", class_name="text-gray-600"
+            "Du musst angemeldet sein, um diese Funktion zu nutzen.",
+            class_name="text-gray-600",
         ),
         rx.el.a(
-            "Go to ACF Login",
-            href="/acf-login",
+            "Zum Login",
+            href="/login",
             class_name="text-violet-600 hover:underline mt-4 inline-block",
         ),
         class_name="text-center p-8 bg-white rounded-xl shadow-sm",
@@ -32,14 +33,7 @@ def login_prompt() -> rx.Component:
 def quick_entry_view() -> rx.Component:
     return rx.el.div(
         rx.el.div(
-            rx.el.h1(
-                "ACF Quick Cost Entry", class_name="text-3xl font-bold text-gray-900"
-            ),
-            rx.el.button(
-                "ACF Logout",
-                on_click=ACFState.acf_logout,
-                class_name="bg-red-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-red-600 transition-colors shadow-sm",
-            ),
+            rx.el.h1("Quick Cost Entry", class_name="text-3xl font-bold text-gray-900"),
             class_name="flex justify-between items-center mb-8",
         ),
         rx.el.div(
