@@ -2,6 +2,7 @@ from sqlmodel import create_engine, SQLModel, Session, select
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 import bcrypt
+import random
 from app.models import Member, Cost, Notification
 import os
 
@@ -193,4 +194,57 @@ def seed_test_data():
         if new_members_to_add:
             for member in new_members_to_add:
                 session.add(member)
+            session.commit()
+        test_members = session.exec(
+            select(Member).where(Member.email.like("%@testverein.de"))
+        ).all()
+        other_descriptions = [
+            "Snacks",
+            "Supplies",
+            "Team Event",
+            "Equipment",
+            "Taxi",
+            "Büromaterial",
+            "Pizza",
+            "Dekoration",
+            "Vereinsfeier",
+            "Trikots",
+        ]
+        costs_to_add = []
+        for member in test_members:
+            existing_costs = session.exec(
+                select(Cost).where(Cost.member_id == member.id)
+            ).first()
+            if existing_costs:
+                continue
+            num_costs = random.randint(3, 8)
+            for _ in range(num_costs):
+                cat_type = random.choice(["non-alc", "alc", "other"])
+                if cat_type == "non-alc":
+                    category = "Getränke (nicht-alkoholisch) - €1.50"
+                    amount = 1.5
+                    description = "Nicht-alkoholisches Getränk"
+                elif cat_type == "alc":
+                    category = "Getränke (alkoholisch) - €2.50"
+                    amount = 2.5
+                    description = "Alkoholisches Getränk"
+                else:
+                    category = "Anderes"
+                    amount = round(random.uniform(5.0, 30.0), 2)
+                    description = random.choice(other_descriptions)
+                days_ago = random.randint(0, 30)
+                cost_date = (datetime.now() - timedelta(days=days_ago)).strftime(
+                    "%Y-%m-%d"
+                )
+                cost = Cost(
+                    description=description,
+                    amount=amount,
+                    date=cost_date,
+                    category=category,
+                    member_id=member.id,
+                )
+                costs_to_add.append(cost)
+        if costs_to_add:
+            for cost in costs_to_add:
+                session.add(cost)
             session.commit()
