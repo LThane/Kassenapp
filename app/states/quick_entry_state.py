@@ -17,6 +17,14 @@ class QuickEntryState(BaseState):
         "Anderes": None,
     }
     form_states: dict[int, dict[str, str]] = {}
+    open_forms: list[int] = []
+
+    @rx.event
+    def toggle_form(self, member_id: int):
+        if member_id in self.open_forms:
+            self.open_forms = [mid for mid in self.open_forms if mid != member_id]
+        else:
+            self.open_forms = self.open_forms + [member_id]
 
     @rx.var
     def today_date(self) -> str:
@@ -136,6 +144,8 @@ class QuickEntryState(BaseState):
             "description": "",
             "date": self.today_date,
         }
+        if member_id in self.open_forms:
+            self.open_forms = [mid for mid in self.open_forms if mid != member_id]
         yield rx.toast.success(f"Cost added for {member_name}!")
         return
 

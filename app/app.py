@@ -6,6 +6,7 @@ from app.pages.profile import profile_page
 from app.pages.costs import costs_page
 from app.pages.all_costs import all_costs_page
 from app.pages.quick_entry import quick_entry_page
+from app.pages.tile_entry import tile_entry_page
 from app.states.auth_state import MyAuthState
 from app.states.notification_state import NotificationState
 from app.database import init_db
@@ -29,3 +30,4 @@ app.add_page(profile_page, route="/profile")
 app.add_page(costs_page, route="/costs")
 app.add_page(all_costs_page, route="/all-costs")
 app.add_page(quick_entry_page, route="/quick-entry")
+app.add_page(tile_entry_page, route="/tile-entry")

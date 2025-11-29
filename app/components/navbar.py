@@ -61,6 +61,11 @@ def authenticated_nav() -> rx.Component:
             class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
         ),
         rx.el.a(
+            "Tiles",
+            href="/tile-entry",
+            class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
+        ),
+        rx.el.a(
             "Profil",
             href="/profile",
             class_name="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors",
@@ -116,6 +121,12 @@ def mobile_menu() -> rx.Component:
                 rx.el.a(
                     "Quick Entry",
                     href="/quick-entry",
+                    class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
+                    on_click=UIState.close_mobile_menu,
+                ),
+                rx.el.a(
+                    "Tiles",
+                    href="/tile-entry",
                     class_name="block px-4 py-2 text-gray-700 hover:bg-gray-50",
                     on_click=UIState.close_mobile_menu,
                 ),
