@@ -18,17 +18,20 @@ def tile_entry_page() -> rx.Component:
 def tile_entry_view() -> rx.Component:
     return rx.el.div(
         rx.el.div(
-            rx.el.h1("Tile Cost Entry", class_name="text-3xl font-bold text-gray-900"),
-            class_name="flex justify-between items-center mb-4",
+            rx.el.h1(
+                "Tile Cost Entry",
+                class_name="text-xl md:text-3xl font-bold text-gray-900",
+            ),
+            class_name="flex justify-between items-center mb-2 md:mb-4",
         ),
         rx.el.input(
             placeholder="Search members by name...",
             on_change=QuickEntryState.set_search_query.debounce(300),
-            class_name="w-full max-w-sm px-4 py-3 mb-4 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 text-base",
+            class_name="w-full max-w-sm px-3 py-2 md:px-4 md:py-3 mb-2 md:mb-4 border border-gray-300 rounded-lg md:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 text-sm md:text-base",
         ),
         rx.el.div(
             rx.foreach(QuickEntryState.filtered_members, member_tile),
-            class_name="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4",
+            class_name="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4",
         ),
         selection_dialog(),
         confirmation_dialog(),
@@ -40,16 +43,16 @@ def member_tile(member: Member) -> rx.Component:
         rx.el.div(
             rx.image(
                 src=f"https://api.dicebear.com/9.x/initials/svg?seed={member.name}",
-                class_name="w-16 h-16 rounded-full mb-2 bg-violet-100 shadow-sm",
+                class_name="w-12 h-12 md:w-16 md:h-16 rounded-full mb-1 md:mb-2 bg-violet-100 shadow-sm",
             ),
             rx.el.h3(
                 member.name,
-                class_name="font-semibold text-gray-800 text-center truncate w-full px-2 text-base",
+                class_name="font-semibold text-gray-800 text-center truncate w-full px-1 md:px-2 text-xs md:text-base",
             ),
             class_name="flex flex-col items-center justify-center h-full w-full",
         ),
         on_click=lambda: QuickEntryState.open_selection(member.id),
-        class_name="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 p-4 h-48 w-full flex flex-col items-center justify-center",
+        class_name="bg-white rounded-xl md:rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 p-2 md:p-4 h-28 md:h-48 w-full flex flex-col items-center justify-center",
     )
 
 
