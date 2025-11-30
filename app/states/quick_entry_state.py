@@ -18,6 +18,47 @@ class QuickEntryState(BaseState):
     }
     form_states: dict[int, dict[str, str]] = {}
     open_forms: list[int] = []
+    selected_member_id: int = -1
+    is_selection_open: bool = False
+    is_custom_form_visible: bool = False
+    show_confirmation: bool = False
+    confirmation_details: dict[str, str] = {
+        "member_name": "",
+        "item_name": "",
+        "amount": "",
+    }
+
+    @rx.var
+    def selected_member(self) -> Member:
+        return next(
+            (m for m in self.members if m.id == self.selected_member_id),
+            Member(id=0, name="", email="", password=""),
+        )
+
+    @rx.event
+    def open_selection(self, member_id: int):
+        self.selected_member_id = member_id
+        self.is_selection_open = True
+        self.is_custom_form_visible = False
+        if member_id not in self.form_states:
+            self.form_states[member_id] = {
+                "category": "",
+                "amount": "",
+                "description": "",
+                "date": self.today_date,
+            }
+
+    @rx.event
+    def close_selection(self):
+        self.is_selection_open = False
+
+    @rx.event
+    def toggle_custom_form(self):
+        self.is_custom_form_visible = not self.is_custom_form_visible
+
+    @rx.event
+    def close_confirmation(self):
+        self.show_confirmation = False
 
     @rx.event
     def toggle_form(self, member_id: int):
@@ -146,6 +187,13 @@ class QuickEntryState(BaseState):
         }
         if member_id in self.open_forms:
             self.open_forms = [mid for mid in self.open_forms if mid != member_id]
+        self.confirmation_details = {
+            "member_name": member_name,
+            "item_name": description if description else category,
+            "amount": f"€{amount:.2f}",
+        }
+        self.show_confirmation = True
+        self.is_selection_open = False
         yield rx.toast.success(f"Cost added for {member_name}!")
         return
 
@@ -197,4 +245,11 @@ class QuickEntryState(BaseState):
                 session.add(new_notification)
                 yield rx.toast.info(f"Benachrichtigung an {member_name} gesendet.")
             session.commit()
+        self.confirmation_details = {
+            "member_name": member_name,
+            "item_name": description,
+            "amount": f"€{amount:.2f}",
+        }
+        self.show_confirmation = True
+        self.is_selection_open = False
         yield rx.toast.success(f"Drink added for {member_name}!")

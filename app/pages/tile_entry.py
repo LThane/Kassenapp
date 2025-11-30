@@ -24,141 +24,240 @@ def tile_entry_view() -> rx.Component:
         rx.el.input(
             placeholder="Search members by name...",
             on_change=QuickEntryState.set_search_query.debounce(300),
-            class_name="w-full max-w-sm px-4 py-2 mb-8 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500",
+            class_name="w-full max-w-sm px-4 py-4 mb-8 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 text-lg",
         ),
         rx.el.div(
             rx.foreach(QuickEntryState.filtered_members, member_tile),
-            class_name="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4",
+            class_name="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6",
         ),
+        selection_dialog(),
+        confirmation_dialog(),
     )
 
 
 def member_tile(member: Member) -> rx.Component:
-    is_form_open = QuickEntryState.open_forms.contains(member.id)
-    return rx.el.div(
+    return rx.el.button(
         rx.el.div(
-            rx.el.div(
-                rx.menu.root(
-                    rx.menu.trigger(
-                        rx.el.button(
-                            rx.icon(
-                                "ellipsis-vertical",
-                                size=20,
-                                class_name="text-gray-500 hover:text-violet-600",
-                            ),
-                            class_name="p-1 rounded-full hover:bg-gray-100 focus:outline-none",
-                        )
-                    ),
-                    rx.menu.content(
-                        rx.menu.item(
-                            "Non-alcoholic (€1.50)",
-                            on_click=lambda: QuickEntryState.add_quick_drink_for_member(
-                                member.id, "non-alcoholic"
-                            ),
-                            class_name="cursor-pointer",
-                        ),
-                        rx.menu.item(
-                            "Alcoholic (€2.50)",
-                            on_click=lambda: QuickEntryState.add_quick_drink_for_member(
-                                member.id, "alcoholic"
-                            ),
-                            class_name="cursor-pointer",
-                        ),
-                        rx.menu.separator(),
-                        rx.menu.item(
-                            "Add Custom Cost...",
-                            on_click=lambda: QuickEntryState.toggle_form(member.id),
-                            class_name="cursor-pointer font-medium text-violet-600",
-                        ),
-                        class_name="bg-white rounded-lg shadow-lg border border-gray-100 min-w-[200px] overflow-hidden z-50",
-                    ),
-                ),
-                class_name="absolute top-2 right-2",
+            rx.image(
+                src=f"https://api.dicebear.com/9.x/initials/svg?seed={member.name}",
+                class_name="w-24 h-24 rounded-full mb-4 bg-violet-100 shadow-sm",
             ),
-            rx.el.div(
-                rx.image(
-                    src=f"https://api.dicebear.com/9.x/initials/svg?seed={member.name}",
-                    class_name="w-16 h-16 rounded-full mb-3 bg-violet-100",
-                ),
-                rx.el.h3(
-                    member.name,
-                    class_name="font-semibold text-gray-800 text-center truncate w-full px-2 text-sm",
-                ),
-                class_name="flex flex-col items-center mt-4",
+            rx.el.h3(
+                member.name,
+                class_name="font-semibold text-gray-800 text-center truncate w-full px-2 text-lg",
             ),
-            rx.cond(is_form_open, tile_inline_form(member)),
-            class_name="p-4 h-full flex flex-col",
+            class_name="flex flex-col items-center justify-center h-full w-full",
         ),
-        class_name="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all relative overflow-hidden",
+        on_click=lambda: QuickEntryState.open_selection(member.id),
+        class_name="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 p-6 h-64 w-full flex flex-col items-center justify-center",
     )
 
 
-def tile_inline_form(member: Member) -> rx.Component:
-    form_state = QuickEntryState.get_form_state[member.id]
+def selection_dialog() -> rx.Component:
+    member_id = QuickEntryState.selected_member_id
+    form_state = QuickEntryState.get_form_state[member_id]
     is_custom_category = form_state["category"] == "Anderes"
-    return rx.el.div(
-        rx.el.div(
-            rx.el.select(
-                rx.el.option("Category...", value="", disabled=True),
-                rx.foreach(
-                    QuickEntryState.categories.keys(),
-                    lambda c: rx.el.option(c, value=c),
+    return rx.radix.primitives.dialog.root(
+        rx.radix.primitives.dialog.portal(
+            rx.radix.primitives.dialog.overlay(
+                class_name="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-in fade-in duration-200"
+            ),
+            rx.radix.primitives.dialog.content(
+                rx.el.div(
+                    rx.radix.primitives.dialog.title(
+                        QuickEntryState.selected_member.name,
+                        class_name="text-3xl font-bold text-gray-900 text-center mb-2",
+                    ),
+                    rx.radix.primitives.dialog.description(
+                        "Wähle eine Option oder erstelle einen benutzerdefinierten Eintrag.",
+                        class_name="text-gray-500 text-center mb-8",
+                    ),
+                    rx.cond(
+                        ~QuickEntryState.is_custom_form_visible,
+                        rx.el.div(
+                            rx.el.button(
+                                rx.el.div(
+                                    rx.icon("cup-soda", size=48, class_name="mb-2"),
+                                    rx.el.span(
+                                        "Nicht-alkoholisch",
+                                        class_name="text-xl font-semibold",
+                                    ),
+                                    rx.el.span(
+                                        "€1.50", class_name="text-lg opacity-80"
+                                    ),
+                                    class_name="flex flex-col items-center",
+                                ),
+                                on_click=lambda: QuickEntryState.add_quick_drink_for_member(
+                                    member_id, "non-alcoholic"
+                                ),
+                                class_name="bg-blue-500 hover:bg-blue-600 text-white rounded-2xl p-8 shadow-lg transition-transform active:scale-95 flex justify-center items-center h-48",
+                            ),
+                            rx.el.button(
+                                rx.el.div(
+                                    rx.icon("beer", size=48, class_name="mb-2"),
+                                    rx.el.span(
+                                        "Alkoholisch",
+                                        class_name="text-xl font-semibold",
+                                    ),
+                                    rx.el.span(
+                                        "€2.50", class_name="text-lg opacity-80"
+                                    ),
+                                    class_name="flex flex-col items-center",
+                                ),
+                                on_click=lambda: QuickEntryState.add_quick_drink_for_member(
+                                    member_id, "alcoholic"
+                                ),
+                                class_name="bg-amber-500 hover:bg-amber-600 text-white rounded-2xl p-8 shadow-lg transition-transform active:scale-95 flex justify-center items-center h-48",
+                            ),
+                            rx.el.button(
+                                rx.el.div(
+                                    rx.icon("pencil", size=32, class_name="mb-2"),
+                                    rx.el.span(
+                                        "Anderes / Manuell",
+                                        class_name="text-lg font-medium",
+                                    ),
+                                    class_name="flex flex-col items-center",
+                                ),
+                                on_click=QuickEntryState.toggle_custom_form,
+                                class_name="bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-2xl p-6 shadow-sm transition-colors md:col-span-2 h-24 flex justify-center items-center border-2 border-dashed border-gray-300",
+                            ),
+                            class_name="grid grid-cols-1 md:grid-cols-2 gap-4 w-full",
+                        ),
+                        rx.el.div(
+                            rx.el.div(
+                                rx.el.label(
+                                    "Kategorie",
+                                    class_name="block text-sm font-medium text-gray-700 mb-1",
+                                ),
+                                rx.el.select(
+                                    rx.el.option(
+                                        "Bitte wählen...", value="", disabled=True
+                                    ),
+                                    rx.foreach(
+                                        QuickEntryState.categories.keys(),
+                                        lambda c: rx.el.option(c, value=c),
+                                    ),
+                                    value=form_state["category"],
+                                    on_change=lambda value: QuickEntryState.set_form_field(
+                                        member_id, "category", value
+                                    ),
+                                    class_name="w-full p-4 bg-gray-50 border border-gray-300 rounded-xl text-lg focus:ring-2 focus:ring-violet-500",
+                                ),
+                                class_name="mb-4",
+                            ),
+                            rx.el.div(
+                                rx.el.label(
+                                    "Betrag (€)",
+                                    class_name="block text-sm font-medium text-gray-700 mb-1",
+                                ),
+                                rx.el.input(
+                                    type="number",
+                                    placeholder="0.00",
+                                    on_change=lambda value: QuickEntryState.set_form_field(
+                                        member_id, "amount", value
+                                    ),
+                                    is_disabled=~is_custom_category
+                                    & (form_state["category"] != ""),
+                                    class_name="w-full p-4 bg-gray-50 border border-gray-300 rounded-xl text-lg focus:ring-2 focus:ring-violet-500 disabled:bg-gray-100",
+                                    default_value=form_state["amount"],
+                                ),
+                                class_name="mb-4",
+                            ),
+                            rx.el.div(
+                                rx.el.label(
+                                    "Beschreibung (Optional)",
+                                    class_name="block text-sm font-medium text-gray-700 mb-1",
+                                ),
+                                rx.el.input(
+                                    type="text",
+                                    placeholder="z.B. Pizza, Taxi...",
+                                    on_change=lambda value: QuickEntryState.set_form_field(
+                                        member_id, "description", value
+                                    ),
+                                    class_name="w-full p-4 bg-gray-50 border border-gray-300 rounded-xl text-lg focus:ring-2 focus:ring-violet-500",
+                                    default_value=form_state["description"],
+                                ),
+                                class_name="mb-6",
+                            ),
+                            rx.el.div(
+                                rx.el.button(
+                                    "Hinzufügen",
+                                    on_click=lambda: QuickEntryState.add_cost_for_member(
+                                        member_id
+                                    ),
+                                    class_name="flex-1 bg-violet-600 text-white p-4 rounded-xl text-lg font-semibold hover:bg-violet-700 shadow-md",
+                                ),
+                                rx.el.button(
+                                    "Zurück",
+                                    on_click=QuickEntryState.toggle_custom_form,
+                                    class_name="flex-none bg-gray-200 text-gray-800 p-4 rounded-xl text-lg font-medium hover:bg-gray-300",
+                                ),
+                                class_name="flex gap-3",
+                            ),
+                            class_name="bg-white p-1 rounded-lg animate-in slide-in-from-right duration-200",
+                        ),
+                    ),
+                    rx.el.div(
+                        rx.radix.primitives.dialog.close(
+                            rx.el.button(
+                                "Abbrechen",
+                                class_name="w-full py-4 text-gray-500 hover:text-gray-800 font-medium transition-colors",
+                            )
+                        ),
+                        class_name="mt-6 border-t pt-2",
+                    ),
                 ),
-                value=form_state["category"],
-                on_change=lambda value: QuickEntryState.set_form_field(
-                    member.id, "category", value
+                class_name="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl shadow-2xl p-8 w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto z-50 focus:outline-none animate-in zoom-in-95 duration-200",
+            ),
+        ),
+        open=QuickEntryState.is_selection_open,
+        on_open_change=QuickEntryState.set_is_selection_open,
+    )
+
+
+def confirmation_dialog() -> rx.Component:
+    return rx.radix.primitives.dialog.root(
+        rx.radix.primitives.dialog.portal(
+            rx.radix.primitives.dialog.overlay(
+                class_name="fixed inset-0 bg-violet-900/40 backdrop-blur-md z-[60] animate-in fade-in duration-300"
+            ),
+            rx.radix.primitives.dialog.content(
+                rx.el.div(
+                    rx.el.div(
+                        rx.icon("check", size=80, class_name="text-white"),
+                        class_name="w-32 h-32 rounded-full bg-green-500 flex items-center justify-center mb-6 shadow-lg animate-in zoom-in duration-300",
+                    ),
+                    rx.radix.primitives.dialog.title(
+                        "Erfolgreich gebucht!",
+                        class_name="text-3xl font-bold text-gray-900 text-center mb-2",
+                    ),
+                    rx.el.div(
+                        rx.el.p(
+                            QuickEntryState.confirmation_details["member_name"],
+                            class_name="text-xl font-semibold text-gray-800",
+                        ),
+                        rx.el.p(
+                            QuickEntryState.confirmation_details["item_name"],
+                            class_name="text-lg text-gray-600 mt-1",
+                        ),
+                        rx.el.p(
+                            QuickEntryState.confirmation_details["amount"],
+                            class_name="text-4xl font-bold text-violet-600 mt-4",
+                        ),
+                        class_name="text-center my-6 bg-gray-50 p-6 rounded-2xl w-full",
+                    ),
+                    rx.radix.primitives.dialog.close(
+                        rx.el.button(
+                            "OK, Weiter",
+                            on_click=QuickEntryState.close_confirmation,
+                            class_name="w-full bg-violet-600 text-white text-xl font-bold py-5 rounded-2xl hover:bg-violet-700 shadow-lg transition-transform active:scale-95",
+                        )
+                    ),
+                    class_name="flex flex-col items-center",
                 ),
-                class_name="w-full px-2 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded focus:outline-none focus:border-violet-500",
+                class_name="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl shadow-2xl p-10 w-[90vw] max-w-md z-[60] focus:outline-none animate-in zoom-in-95 duration-200",
             ),
-            class_name="mb-2",
         ),
-        rx.el.div(
-            rx.el.input(
-                placeholder="Amount",
-                on_change=lambda value: QuickEntryState.set_form_field(
-                    member.id, "amount", value
-                ),
-                is_disabled=~is_custom_category & (form_state["category"] != ""),
-                type="number",
-                class_name="w-full px-2 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded focus:outline-none focus:border-violet-500 disabled:bg-gray-100",
-                default_value=form_state["amount"],
-            ),
-            class_name="mb-2",
-        ),
-        rx.el.div(
-            rx.el.input(
-                placeholder="Desc (opt)",
-                on_change=lambda value: QuickEntryState.set_form_field(
-                    member.id, "description", value
-                ),
-                class_name="w-full px-2 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded focus:outline-none focus:border-violet-500",
-                default_value=form_state["description"],
-            ),
-            class_name="mb-2",
-        ),
-        rx.el.div(
-            rx.el.input(
-                type="date",
-                on_change=lambda value: QuickEntryState.set_form_field(
-                    member.id, "date", value
-                ),
-                class_name="w-full px-2 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded focus:outline-none focus:border-violet-500",
-                default_value=form_state["date"],
-            ),
-            class_name="mb-2",
-        ),
-        rx.el.div(
-            rx.el.button(
-                "Add",
-                on_click=lambda: QuickEntryState.add_cost_for_member(member.id),
-                class_name="w-full bg-violet-600 text-white text-xs font-medium py-1.5 rounded hover:bg-violet-700 transition-colors",
-            ),
-            rx.el.button(
-                "Cancel",
-                on_click=lambda: QuickEntryState.toggle_form(member.id),
-                class_name="w-full bg-gray-200 text-gray-700 text-xs font-medium py-1.5 rounded hover:bg-gray-300 transition-colors",
-            ),
-            class_name="grid grid-cols-2 gap-2",
-        ),
-        class_name="mt-4 pt-4 border-t border-gray-100 animate-in fade-in slide-in-from-top-2 duration-200",
+        open=QuickEntryState.show_confirmation,
+        on_open_change=QuickEntryState.set_show_confirmation,
     )
