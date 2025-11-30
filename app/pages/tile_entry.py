@@ -254,19 +254,19 @@ def confirmation_dialog() -> rx.Component:
                         class_name="text-center my-6 bg-gray-50 p-6 rounded-2xl w-full",
                     ),
                     rx.el.div(
+                        rx.el.button(
+                            "Rückgängig",
+                            on_click=QuickEntryState.undo_last_booking,
+                            class_name="flex-none bg-red-100 text-red-600 text-base font-medium px-6 py-3 rounded-2xl hover:bg-red-200 hover:text-red-700 shadow-sm transition-colors active:scale-95",
+                        ),
                         rx.radix.primitives.dialog.close(
                             rx.el.button(
                                 "OK, Weiter",
                                 on_click=QuickEntryState.close_confirmation,
-                                class_name="w-full bg-violet-600 text-white text-xl font-bold py-5 rounded-2xl hover:bg-violet-700 shadow-lg transition-transform active:scale-95",
+                                class_name="flex-1 bg-violet-600 text-white text-xl font-bold py-5 rounded-2xl hover:bg-violet-700 shadow-lg transition-transform active:scale-95",
                             )
                         ),
-                        rx.el.button(
-                            "Rückgängig",
-                            on_click=QuickEntryState.undo_last_booking,
-                            class_name="w-full bg-red-500 text-white text-xl font-bold py-5 rounded-2xl hover:bg-red-600 shadow-lg transition-transform active:scale-95",
-                        ),
-                        class_name="flex gap-3 w-full",
+                        class_name="flex items-center gap-4 w-full mt-2",
                     ),
                     class_name="flex flex-col items-center",
                 ),
