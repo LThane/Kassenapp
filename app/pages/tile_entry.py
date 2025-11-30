@@ -263,7 +263,7 @@ def confirmation_dialog() -> rx.Component:
                             rx.el.button(
                                 "OK, Weiter",
                                 on_click=QuickEntryState.close_confirmation,
-                                class_name="flex-1 bg-violet-600 text-white text-xl font-bold py-5 rounded-2xl hover:bg-violet-700 shadow-lg transition-transform active:scale-95",
+                                class_name="flex-1 bg-violet-600 text-white text-2xl font-bold py-6 px-8 rounded-2xl hover:bg-violet-700 shadow-lg transition-transform active:scale-95",
                             )
                         ),
                         class_name="flex items-center gap-4 w-full mt-2",
