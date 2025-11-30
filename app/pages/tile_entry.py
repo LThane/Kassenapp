@@ -163,6 +163,10 @@ def selection_dialog() -> rx.Component:
                                     & (form_state["category"] != ""),
                                     class_name="w-full p-4 bg-gray-50 border border-gray-300 rounded-xl text-lg focus:ring-2 focus:ring-violet-500 disabled:bg-gray-100",
                                     default_value=form_state["amount"],
+                                    custom_attrs={
+                                        "inputmode": "decimal",
+                                        "pattern": "[0-9]*",
+                                    },
                                 ),
                                 class_name="mb-4",
                             ),
@@ -249,12 +253,20 @@ def confirmation_dialog() -> rx.Component:
                         ),
                         class_name="text-center my-6 bg-gray-50 p-6 rounded-2xl w-full",
                     ),
-                    rx.radix.primitives.dialog.close(
+                    rx.el.div(
+                        rx.radix.primitives.dialog.close(
+                            rx.el.button(
+                                "OK, Weiter",
+                                on_click=QuickEntryState.close_confirmation,
+                                class_name="w-full bg-violet-600 text-white text-xl font-bold py-5 rounded-2xl hover:bg-violet-700 shadow-lg transition-transform active:scale-95",
+                            )
+                        ),
                         rx.el.button(
-                            "OK, Weiter",
-                            on_click=QuickEntryState.close_confirmation,
-                            class_name="w-full bg-violet-600 text-white text-xl font-bold py-5 rounded-2xl hover:bg-violet-700 shadow-lg transition-transform active:scale-95",
-                        )
+                            "Rückgängig",
+                            on_click=QuickEntryState.undo_last_booking,
+                            class_name="w-full bg-red-500 text-white text-xl font-bold py-5 rounded-2xl hover:bg-red-600 shadow-lg transition-transform active:scale-95",
+                        ),
+                        class_name="flex gap-3 w-full",
                     ),
                     class_name="flex flex-col items-center",
                 ),

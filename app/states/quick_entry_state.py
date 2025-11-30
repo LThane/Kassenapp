@@ -27,6 +27,9 @@ class QuickEntryState(BaseState):
         "item_name": "",
         "amount": "",
     }
+    last_booking_id: int = -1
+    last_notification_id: int = -1
+    last_booking_timestamp: datetime | None = None
 
     @rx.var
     def selected_member(self) -> Member:
@@ -169,6 +172,7 @@ class QuickEntryState(BaseState):
             auth_user_name = (
                 auth_user.get("name") if isinstance(auth_user, dict) else auth_user.name
             )
+            new_notification = None
             if auth_user_id != member_id:
                 notification_message = (
                     f"{auth_user_name} hat Kosten (€{amount:.2f}) für dich hinzugefügt."
@@ -179,6 +183,14 @@ class QuickEntryState(BaseState):
                 session.add(new_notification)
                 yield rx.toast.info(f"Benachrichtigung an {member_name} gesendet.")
             session.commit()
+            session.refresh(new_cost)
+            self.last_booking_id = new_cost.id
+            self.last_booking_timestamp = datetime.now()
+            if new_notification:
+                session.refresh(new_notification)
+                self.last_notification_id = new_notification.id
+            else:
+                self.last_notification_id = -1
         self.form_states[member_id] = {
             "category": "",
             "amount": "",
@@ -235,6 +247,7 @@ class QuickEntryState(BaseState):
             auth_user_name = (
                 auth_user.get("name") if isinstance(auth_user, dict) else auth_user.name
             )
+            new_notification = None
             if auth_user_id != member_id:
                 notification_message = (
                     f"{auth_user_name} hat ein '{description}' für dich hinzugefügt."
@@ -245,6 +258,14 @@ class QuickEntryState(BaseState):
                 session.add(new_notification)
                 yield rx.toast.info(f"Benachrichtigung an {member_name} gesendet.")
             session.commit()
+            session.refresh(new_cost)
+            self.last_booking_id = new_cost.id
+            self.last_booking_timestamp = datetime.now()
+            if new_notification:
+                session.refresh(new_notification)
+                self.last_notification_id = new_notification.id
+            else:
+                self.last_notification_id = -1
         self.confirmation_details = {
             "member_name": member_name,
             "item_name": description,
@@ -253,3 +274,22 @@ class QuickEntryState(BaseState):
         self.show_confirmation = True
         self.is_selection_open = False
         yield rx.toast.success(f"Drink added for {member_name}!")
+
+    @rx.event
+    def undo_last_booking(self):
+        if self.last_booking_id <= 0:
+            return rx.toast.error("Keine Buchung zum Stornieren gefunden.")
+        with db_session() as session:
+            cost = session.get(Cost, self.last_booking_id)
+            if cost:
+                session.delete(cost)
+            if self.last_notification_id > 0:
+                notif = session.get(Notification, self.last_notification_id)
+                if notif:
+                    session.delete(notif)
+            session.commit()
+        self.last_booking_id = -1
+        self.last_notification_id = -1
+        self.last_booking_timestamp = None
+        self.show_confirmation = False
+        yield rx.toast.success("Buchung erfolgreich rückgängig gemacht.")
